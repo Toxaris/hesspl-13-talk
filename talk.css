@@ -1,0 +1,298 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4,
+h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite,
+code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike,
+strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul,
+li, fieldset, form, label, legend, table, caption, tbody, tfoot,
+thead, tr, th, td, article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup, menu, nav, output,
+ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0; border: 0; font-size: 100%; font: inherit;
+    vertical-align: baseline;
+}
+
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header,
+hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+body {
+    font-family: 'Cambria', serif;
+    min-height: 740px;
+    background: white;
+    color: black;
+}
+
+b, strong {
+    font-weight: bold
+}
+
+i, em {
+    font-style: italic
+}
+
+.code {
+    font-family: candara;
+    font-size: 30px;
+    line-height: 1.1;
+}
+
+.code, .code * {
+    white-space: nowrap;
+}
+
+.con {
+    display: inline-block;
+    text-align: right;
+}
+
+.pat {
+    display: inline-block;
+}
+
+.indent-1 {
+    margin-left: 1em;
+}
+
+.indent-2 {
+    margin-left: 2em;
+}
+
+.indent-3 {
+    margin-left: 3em;
+}
+
+.indent-4 {
+    margin-left: 4em;
+}
+
+.indent-5 {
+    margin-left: 5em;
+}
+
+.indent-6 {
+    margin-left: 6em;
+}
+
+.indent-7 {
+    margin-left: 7em;
+}
+
+.indent-8 {
+    margin-left: 8em;
+}
+
+h1 {
+   font-size: 48px;
+   padding-top: 40px;
+   padding-bottom: 20px;
+}
+
+u {
+    color: gray;
+    text-decoration: none;
+}
+
+th {
+    font-weight: bold;
+}
+
+td, th {
+    text-align: left;
+    padding-right: 1.5em;
+}
+
+#impress {
+    font-family: 'Cambria', georgia, serif;
+    font-size: 24px;
+    line-height: 1.5;
+}
+
+.impress-supported > .fallback-message {
+    display: none;
+}
+
+.step {
+    position: relative;
+    width: 1000px;
+
+    /* background: rgb(240, 240, 240); */
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.impress-enabled .step {
+    margin: 0;
+
+    -webkit-transition: opacity 1s;
+    -moz-transition: opacity 1s;
+    -ms-transition: opacity 1s;
+    -o-transition: opacity 1s;
+    transition: opacity 1s;
+}
+
+.impress-enabled .step.active {
+    opacity: 1;
+}
+
+.future {
+    opacity: 0.1;
+}
+
+.past, .active {
+    opacity: 1;
+}
+
+#title {
+    text-align: center;
+    border-top: 2px black solid;
+    border-bottom: 2px black solid;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.title {
+    font-size: 200%;
+}
+
+.author {
+    padding-top: 50px;
+}
+
+body:not(.impress-enabled) #title {
+    font-size: 48px;
+    width: 2000px;
+}
+
+body:not(.impress-enabled) #column-1 {
+    position: absolute;
+    left: 0px;
+}
+
+body:not(.impress-enabled) #column-2 {
+    position: absolute;
+    left: 1000px;
+}
+
+body:not(.impress-enabled) #column-3 {
+    position: absolute;
+    left: -1000px;
+}
+
+#ppp .code {
+    visibility: hidden;
+}
+
+#ppp .stay.indent-4 {
+    margin-left: 3em;
+}
+
+.substepping {
+    -webkit-transition: all 500ms;
+    -moz-transition: all 500ms;
+    -ms-transition: all 500ms;
+    -o-transition: all 500ms;
+    transition: all 500ms;
+}
+
+.add {
+    opacity: 0;
+}
+
+.adding {
+    opacity: 0.8;
+    color: green;
+}
+
+.added {
+    opacity: 1;
+}
+
+.kill {
+    opacity: 1;
+}
+
+.killing {
+    opacity: 0.8;
+    color: red;
+}
+
+.killed {
+    opacity: 0;
+}
+    
+span.add, span.adding, span.added, span.kill, span.killing, span.killed {
+    display: inline-block;
+}
+
+span.killed {
+    width: 0;
+}
+
+div.killed {
+    height: 0;
+}
+
+#fusion .code {
+    visibility: hidden;
+}
+
+#fusion .substep-3.added .substep-4 {
+    opacity: 0.8;
+    color: green;
+}
+
+#fv-alg > .code {
+    visibility: hidden;
+}
+
+#fv-alg .indent-0.stayed {
+    margin-left: 1em;
+}
+
+#fv-alg .indent-1.stayed {
+    margin-left: 2em;
+}
+
+#fv-alg .indent-2.stayed {
+    margin-left: 3em;
+}
+
+#fv-alg .indent-3.stayed {
+    margin-left: 4em;
+}
+
+#algebra > .code {
+    visibility: hidden;
+}

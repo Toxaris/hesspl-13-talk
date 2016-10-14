@@ -1,0 +1,1027 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=1024" />
+  <meta charset="utf-8" />
+  <title>Prealgebras as Reusable Components for Compositional Functions | Presentation at HessPL, June 28, 2013</title>
+  <link rel="stylesheet" href="talk.css" type="text/css" />
+  <script src="jquery-1.10.1.min.js"></script>
+  <script src="jquery.transit.js"></script>
+</head>
+<body class="impress-not-supported">
+<div class="fallback-message">
+  Your browser <b>doesn't support the features required</b> by
+  impress.js, so you cannot see this presentation. Please use the
+  latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.
+</div>
+
+<div id="impress">
+
+  <div id="title" class="step" data-scale="2">
+    <p class="title">Prealgebras as Reusable Components<br />for Compositional Functions</p>
+    <p class="author">Tillmann Rendel<br />University of Marburg</p>
+  </div>
+
+  <div id="column-1">
+  <div class="step">
+    <h1>Compositional Functions</h1>
+  </div>
+
+  <div class="step">
+    <div class="code">
+      <div class="indent-0">
+        <b>type</b> Name = String
+      </div>
+
+      <div class="indent-0">
+      </div>
+
+      <div class="indent-0">
+        <b>abstract</b> <b>class</b> Term
+      </div>
+
+      <div class="indent-0">
+        <b>case</b> <b>class</b> App(<i>fun</i> : Term, <i>arg</i> : Term) <b>extends</b> Term
+      </div>
+
+      <div class="indent-0">
+        <b>case</b> <b>class</b> Lam(<i>name</i> : Name, <i>body</i> : Term) <b>extends</b> Term
+      </div>
+
+      <div class="indent-0">
+        <b>case</b> <b>class</b> Var(<i>name</i> : Name) <b>extends</b> Term
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div id="fv" class="code">
+      <div class="indent-0">
+        <b>def</b> fv(<i>term</i> : Term) : Set[Name] =
+      </div>
+
+      <div class="indent-1">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <span class="src-1 code">fv(<i>fun</i>) ++ fv(<i>arg</i>)</span>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <span class="src-2 code">fv(<i>body</i>) - <i>name</i></span>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <span class="src-3 code">Set(<i>name</i>)</span>
+      </div>
+
+      <div class="indent-1">
+        }
+      </div>
+    </div>
+  </div>
+
+  <div id="pp" class="step">
+    <h1> A pretty printer.</h1>
+    <div class="code">
+      <div class="indent-0">
+        <b>def</b> pp(<i>term</i> : Term) : String =
+      </div>
+
+      <div class="indent-1">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <u>"("</u> + pp(<i>fun</i>) + <u>" "</u> +  pp(<i>arg</i>) + <u>")"</u>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <u>"("</u> <i>name</i> + <u>"=>"</u> + pp(<i>body</i>) + <u>")"</u>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <i>name</i>
+      </div>
+
+      <div class="indent-1">
+           }
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <h1>Reusability Challenge</h1>
+
+    <p>
+      The (slightly) <b>p</b>rettier <b>p</b>retty <b>p</b>rinter
+      shows unused variables as underscores.
+    </p>
+
+    <table>
+      <tr>
+        <th>Term</th>
+        <th>fv</th>
+        <th>pp</th>
+        <th>ppp</th>
+      </tr>
+      <tr>
+        <td><span class="code">Var(<u>"x"</u>)</span></td>
+        <td><span class="code">Set(<u>"x"</u>)</span></td>
+        <td><span class="code"><u>"x"</u></span></td>
+        <td><span class="code"><u>"x"</u></span></td>
+      </tr>
+      <tr>
+        <td><span class="code">Lam(<u>"x"</u>, Var(<u>"x"</u>))</span></td>
+        <td><span class="code">Set()</span></td>
+        <td><span class="code"><u>"(x => x)"</u></span></td>
+        <td><span class="code"><u>"(x => x)"</u></span></td>
+      </tr>
+      <tr>
+        <td><span class="code">Lam(<u>"y"</u>, Var(<u>"x"</u>))</span></td>
+        <td><span class="code">Set(<u>"x"</u>)</span></td>
+        <td><span class="code"><u>"(y => x)"</u></span></td>
+        <td><span class="code"><u>"(_ => x)"</u></span></td>
+      </tr>
+    </table>
+
+    Reuse <span style="code">fv</span> and <span style="code">pp</span>!
+  </div>
+
+  <div id="copy1" class="step" data-x="1000" data-y="900" data-scale="2">
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $("#copy1").one("impress:stepenter", function(event) {
+        $("#ppp").removeClass("past future").addClass("present");
+      });
+
+      $("#copy1").one("impress:next", function(event) {
+        event.preventDefault();
+        copyAndPaste($("#pp > .code"), $("#ppp > .code"), function() {
+          impress().next("ppp");
+        });
+      });
+    });
+  </script>
+  </div>
+  <div id="column-2">
+  <div id="ppp" class="step">
+    <h1>Manual Solution</h1>
+
+    <div class="code">
+      <div class="indent-0">
+        <b>def</b> pp<span class="substep-1 add">p</span>(<i>term</i> : Term) : String =
+      </div>
+
+      <div class="indent-1">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr;
+      </div>
+
+      <div class="indent-3">
+        <u>"("</u> + pp<span class="substep-1 add">p</span>(<i>fun</i>) + <u>"_"</u> +  pp<span class="substep-1 add">p</span>(<i>arg</i> + <u>")"</u>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr;
+      </div>
+
+      <div class="indent-3 substep-2 add">
+        <b>if</b> (fv(<i>body</i>) contains <i>name</i>)
+      </div>
+
+      <div class="indent-4 substep-2 stay">
+        <u>"("</u> <i>name</i> + <u>"=>"</u> + pp<span class="substep-1 add">p</span>(<i>body</i>) + <u>")"</u>
+      </div>
+
+      <div class="indent-3 substep-2 add">
+        <b>else</b>
+      </div>
+
+      <div class="indent-4 substep-2 add">
+        <u>"(_ =>"</u> + ppp(<i>body</i>) + <u>")"</u>
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <i>name</i>
+      </div>
+
+      <div class="indent-1">
+           }
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#ppp .substep-1");
+      substepHide("#ppp .substep-2");
+
+      $("#ppp").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#ppp .substep-1");
+
+        $("#ppp").one("impress:next", function(event) {
+          event.preventDefault();
+          substepShow("#ppp .substep-2");
+        });
+      });
+    });
+  </script>
+
+  <div id="twoprob" class="step">
+    <h1>Two Problems</h1>
+    <ol>
+      <li>Modularity: No reuse of pp.</li>
+      <li>Performance: Redundant fv calls.</li>
+    </ol>
+  </div>
+
+  <script>
+  $(document).ready(function() {
+    $("#twoprob").one("impress:next", function(event) {
+      event.preventDefault();
+
+      $("#fusion").removeClass("past future").addClass("active");
+  
+      $("#twoprob").one("impress:next", function(event) {
+        event.preventDefault();
+
+        copyAndPaste("#ppp .code", "#fusion .code", function() {
+          impress().goto("fusion");
+        });
+      });
+    });
+  });
+  </script>
+
+  <div id="fusion" class="step">
+    <h1>Single Traversal</h1>
+
+    <div class="code">
+      <div class="indent-0">
+        <b>def</b> ppp(<i>term</i> : Term) : <span class="substep-1 add">(Set[Name],&nbsp;</span>String<span class="substep-1 add">)</span> =
+      </div>
+
+      <div class="indent-1">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr; <span class="substep-6 add">{</span>
+      </div>
+
+      <div class="indent-3 substep-6 add">
+        <b>val</b> resFun = ppp(fun)
+      </div>
+
+      <div class="indent-3 substep-6 add">
+        <b>val</b> resArg = ppp(app)
+      </div>
+
+      <div class="indent-3">
+        <span class="substep-3 add">(</span><u>"("</u> + <span class="substep-7 add">resFun</span><span class="substep-7 kill">ppp(<i>fun</i>)</span><span class="substep-2 add">._2</span> + <u>"_"</u> + <span class="substep-7 add">resArg</span><span class="substep-7 kill">ppp(<i>arg</i>)</span><span class="substep-2 add">._2</span> + <u>")"</u>
+      </div>
+
+      <div class="indent-3 substep-3 add">
+        , <span class="substep-4 dst-1"><span class="substep-7 add">resFun</span><span class="substep-7 kill"><span class="substep-5 add">ppp</span><span class="substep-5 kill">fv</span>(<i>fun</i>)</span><span class="substep-5 add">._1</span> ++ <span class="substep-7 add">resApp</span><span class="substep-7 kill"><span class="substep-5 add">ppp</span><span class="substep-5 kill">fv</span>(<i>arg</i>)</span><span class="substep-5 add">._1</span></span>)
+      </div>
+
+      <div class="indent-2 substep-6 add">
+        }
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr; <span class="substep-6 add">{</span>
+      </div>
+
+      <div class="indent-3 substep-6 add">
+        <b>val</b> resBody = ppp(body)
+      </div>
+
+      <div class="indent-3">
+        <span class="substep-3 add">(</span><b>if</b> (<span class="substep-7 add">resBody</span><span class="substep-7 kill"><span class="substep-5 add">ppp</span><span class="substep-5 kill">fv</span>(<i>body</i>)</span><span class="substep-5 add">._1</span> contains <i>name</i>)
+      </div>
+
+      <div class="indent-4">
+        <u>"("</u> <i>name</i> + <u>"=>"</u> + <span class="substep-7 add">resBody</span><span class="substep-7 kill">ppp(<i>body</i>)</span><span class="substep-2 add">._2</span> + <u>")"</u>
+      </div>
+
+      <div class="indent-3">
+        <b>else</b>
+      </div>
+
+      <div class="indent-4">
+        <u>"(_ =>"</u> + <span class="substep-7 add">resBody</span><span class="substep-7 kill">ppp(<i>body</i>)</span><span class="substep-2 add">._2</span> + <u>")"</u>
+      </div>
+
+      <div class="indent-3 substep-3 add">
+        , <span class="substep-4 dst-2"><span class="substep-7 add">resBody</span><span class="substep-7 kill"><span class="substep-5 add">ppp</span><span class="substep-5 kill">fv</span>(<i>body</i>)</span><span class="substep-5 add">._1</span> - <i>name</i></span></span>)
+      </div>
+
+      <div class="indent-2 substep-6 add">
+        }
+      </div>
+
+      <div class="indent-2">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+      <div class="indent-3">
+        <span class="substep-3 add">(</span><i>name</i><span class="substep-3 add">, <span class="substep-4 dst-3">Set(<i>name</i>)</span>)</span>
+      </div>
+
+      <div class="indent-1">
+           }
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#fusion .substep-1");
+      substepHide("#fusion .substep-2");
+      substepHide("#fusion .substep-3");
+      substepHide("#fusion .substep-4");
+      substepHide("#fusion .substep-5");
+      substepHide("#fusion .substep-6");
+      substepHide("#fusion .substep-7");
+
+      $("#fusion").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#fusion .substep-1");
+
+        $("#fusion").one("impress:next", function(event) {
+          event.preventDefault();
+          substepShow("#fusion .substep-2");
+
+          $("#fusion").one("impress:next", function(event) {
+            event.preventDefault();
+            substepShow("#fusion .substep-3");
+          });
+        });
+      });
+    });
+  </script>
+
+  <div id="fusion-b" class="step" data-x="1000" data-y="900" data-scale="2">
+  </div>
+
+  <script>
+  $(document).ready(function() {
+    $("#fusion-b").one("impress:next", function(event) {
+      event.preventDefault();
+
+      copyAndPaste("#fv .src-1", "#fusion .dst-1", function () {
+        $("#fusion .dst-1").removeClass("substep-4");
+      });
+
+      setTimeout(function() {
+        copyAndPaste("#fv .src-2", "#fusion .dst-2", function () {
+          $("#fusion .dst-2").removeClass("substep-4");
+        });
+      }, 500);
+
+      setTimeout(function() {
+        copyAndPaste("#fv .src-3", "#fusion .dst-3", function () {
+          $("#fusion .dst-3").removeClass("substep-4");
+        });
+      }, 1000);
+
+      setTimeout(function() {
+        impress().next();
+      }, 1100);
+    });
+  });
+  </script>
+
+  <div id="fusion-c" class="step" data-x="1500" data-y="1700">
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $("#fusion-c").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#fusion .substep-5");
+
+        $("#fusion-c").one("impress:next", function(event) {
+          event.preventDefault();
+          substepShow("#fusion .substep-6");
+
+          $("#fusion-c").one("impress:next", function(event) {
+            event.preventDefault();
+            substepShow("#fusion .substep-7");
+          });
+        });
+      });
+    });
+  </script>
+
+  <div class="step">
+    <h1>Problems</h1>
+    <ol>
+      <li>No reuse of pp.</li>
+      <li>No reuse of fv.</li>
+      <li>Unnecessary coupling between fv and ppp.</li>
+      <li>Boilerplate code for traversal management.</li>
+    </ol>
+
+    <p><br/><b>Wanted:</b> Component abstraction to increase modularity!</p>
+  </div>
+  </div>
+
+  <div id="copy2" class="step" data-x="500" data-y="800" data-scale="2">
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $("#copy2").one("impress:stepenter", function(event) {
+        $("#fv-alg").removeClass("past future").addClass("present");
+      });
+
+      $("#copy2").one("impress:next", function(event) {
+        event.preventDefault();
+        copyAndPaste($("#fv.code"), $("#fv-alg > .code"), function() {
+          impress().next();
+        });
+      });
+    });
+  </script>
+
+  <div id="column-3">
+
+  <div id="fv-alg" class="step">
+
+    <h1>Algebras</h1>
+
+    <p>Also known as <b>internal visitors</b>.</p>
+
+    <p>&nbsp;</p>
+
+    <div class="code">
+      <div class="indent-0 substep-1 add">
+        <b>object</b> fv <span class="substep-5 add"><b>extends</b> Algebra[Set[Name]]</span> {
+      </div>
+
+      <div class="indent-1 substep-3 add">
+        <b>def</b> App(<i>fun</i> : Set[Name], <i>arg</i> : Set[Name]) = <i>fun</i> ++ <i>arg</i>
+      </div>
+
+      <div class="indent-1 substep-3 add">
+        <b>def</b> Lam(<i>name</i> : Name, <i>body</i> : Set[Name]) = <i>body</i> - <i>name</i>
+      </div>
+
+      <div class="indent-1 substep-3 add">
+        <b>def</b> Var(<i>name</i> : Name) = Set(<i>name</i>)
+      </div>
+
+      <div class="indent-1 substep-3 add">
+        &nbsp;
+      </div>
+
+      <div class="indent-0 substep-1 stay">
+        <b>def</b> <span class="substep-2 add">apply</span><span class="substep-2 kill">fv</span>(<i>term</i> : Term) : Set[Name] =
+      </div>
+
+      <div class="indent-1 substep-1 stay">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-2 substep-1 stay">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr;
+      </div>
+
+      <div class="indent-3 substep-1 stay">
+        <span class="substep-4 add">App(</span><span class="src-1 code"><span class="substep-2 add">apply</span><span class="substep-2 kill">fv</span>(<i>fun</i>)<span class="substep-4 add">,</span><span class="substep-4 kill"> ++</span> <span class="substep-2 add">apply</span><span class="substep-2 kill">fv</span>(<i>arg</i>)</span><span class="substep-4 add">)</span>)
+      </div>
+
+      <div class="indent-2 substep-1 stay">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr;
+      </div>
+      <div class="indent-3 substep-1 stay">
+        <span class="substep-4 add">Lam(name,</span> <span class="substep-2 add">apply</span><span class="substep-2 kill">fv</span>(<i>body</i>)<span class="substep-4 add">)</span><span class="substep-4 del"> - <i>name</i></span>
+      </div>
+
+      <div class="indent-2 substep-1 stay">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+      <div class="indent-3 substep-1 stay">
+        <span class="substep-4 add">Lam</span><span class="substep-4 del">Set</span>(<i>name</i>)
+      </div>
+
+      <div class="indent-1 substep-1 stay">
+        }
+      </div>
+
+      <div class="indent-0 substep-1 add">
+        }
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#fv-alg .substep-1");
+      substepHide("#fv-alg .substep-2");
+      substepHide("#fv-alg .substep-3");
+      substepHide("#fv-alg .substep-4");
+      substepHide("#fv-alg .substep-5");
+
+      $("#fv-alg").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#fv-alg .substep-1");
+
+        $("#fv-alg").one("impress:next", function(event) {
+          event.preventDefault();
+          substepShow("#fv-alg .substep-2");
+
+          $("#fv-alg").one("impress:next", function(event) {
+            event.preventDefault();
+            substepShow("#fv-alg .substep-3");
+
+            $("#fv-alg").one("impress:next", function(event) {
+              event.preventDefault();
+              substepShow("#fv-alg .substep-4");
+
+              $("#fv-alg").one("impress:next", function(event) {
+                event.preventDefault();
+                copyAndPaste("#fv-alg > .code", "#algebra > .code", function() {
+                  substepShow("#fv-alg .substep-5");
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  </script>
+
+  <div id="algebra" class="step">
+    <div class="code">
+      <div class="indent-0">
+        <span class="substep-1 add"><b>class</b></span><span class="substep-1 kill"><b>object</b></span> <span class="substep-2 add">Algebra</span><span class="substep-2 kill">fv</span><span class="substep-4 add">[T]</span> {
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> App(<i>fun</i> : <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span>, <i>arg</i> : <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span>) <span class="substep-3 add">: <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span></span><span class="substep-3 kill">= <i>fun</i> ++ <i>arg</i></span>
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> Lam(<i>name</i> : Name, <i>body</i> : <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span>) <span class="substep-3 add">: <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span></span><span class="substep-3 kill">= <i>body</i> - <i>name</i></span>
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> Var(<i>name</i> : Name) <span class="substep-3 add">: <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span></span><span class="substep-3 kill">= Set(<i>name)</i></span>
+      </div>
+
+      <div class="indent-1">
+        &nbsp;
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> apply(<i>term</i> : Term) : <span class="substep-4 add">T</span><span class="substep-4 kill">Set[Name]</span> =
+      </div>
+
+      <div class="indent-2">
+        <i>term</i> <b>match</b> {
+      </div>
+
+      <div class="indent-3">
+        <b>case</b> App(<i>fun</i>, <i>arg</i>) &rArr;
+      </div>
+
+      <div class="indent-4">
+        App(apply(<i>fun</i>), apply(<i>arg</i>))
+      </div>
+
+      <div class="indent-3">
+        <b>case</b> Lam(<i>name</i>, <i>body</i>) &rArr;
+      </div>
+
+      <div class="indent-4">
+        Lam(<i>name</i>, apply(<i>body</i>)
+      </div>
+
+      <div class="indent-3">
+        <b>case</b> Var(<i>name</i>) &rArr;
+      </div>
+
+      <div class="indent-4">
+        Lam(<i>name</i>)
+      </div>
+
+      <div class="indent-2">
+        }
+      </div>
+
+      <div class="indent-0">
+        }
+      </div>
+    </div>
+    <p><br/>Every compositional function is expressible via an algebra.</p>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#algebra .substep-1");
+      substepHide("#algebra .substep-2");
+      substepHide("#algebra .substep-3");
+      substepHide("#algebra .substep-4");
+
+      $("#algebra").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#algebra .substep-1");
+
+        $("#algebra").one("impress:next", function(event) {
+          event.preventDefault();
+          substepShow("#algebra .substep-2");
+
+          $("#algebra").one("impress:next", function(event) {
+            event.preventDefault();
+            substepShow("#algebra .substep-3");
+
+            $("#algebra").one("impress:next", function(event) {
+              event.preventDefault();
+              substepShow("#algebra .substep-4");
+            });
+          });
+        });
+      });
+    });
+  </script>
+
+  <div class="step">
+    <h1>Implement pp as Algebra</h1>
+    </p>
+    <div class="code">
+      <div class="indent-0">
+        <b>object</b> pp <b>extends</b> Algebra[String] {
+      </div>
+      <div class="indent-1">
+        ...
+      </div>
+      <div class="indent-0">
+        }
+      </div>
+    </div>
+  </div>
+
+  <div id="zip" class="step">
+    <h1>
+      Implement Zip combinator.
+    </h1>
+    <div class="code">
+      <div class="indent-0">
+        <b>class</b> Zip[A, B](alg1 : Algebra[A], alg2 : Algebra[B])
+      </div>
+      <div class="indent-4">
+        <b>extends</b> Algebra[(A, B)] {
+      </div>
+      <div class="indent-1 substep-1 add">
+        <b>def</b> App(fun : (A, B), arg : (A, B)) : (A, B) =
+      </div>
+      <div class="indent-2 substep-1 add">
+        (alg1.App(fun._1, arg._1), alg2.App(fun._2, arg._2));
+      </div>
+      <div class="indent-1">
+        ...
+      </div>
+      <div class="indent-0">
+        }
+      </div>
+    </div>
+    <p><br />If something is composable, it should admit combinators.</p>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#zip .substep-1");
+
+      $("#zip").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#zip .substep-1");
+      });
+    });
+  </script>
+
+  <div id="ppp-alg" class="step">
+    <h1>Implement ppp Algebra.</h1>
+    <div class="code">
+      <div class="indent-0">
+        <b>object</b> ppp <b>extends</b> Zip(fv, pp) {
+      </div>
+      <div class="indent-1 substep-1 add">
+        <b>def</b> Lam(name : Name, body : (Set[Name], String))
+      </div>
+      <div class="indent-4 substep-1 add">
+        : (Set[Name], String) =
+      </div>
+      <div class="indent-1 substep-1 add">
+        <b>if</b> (body._1 contains name)
+      </div>
+      <div class="indent-2 substep-1 add">
+        super.Lam(name, body)
+      </div>
+      <div class="indent-1 substep-1 add">
+        <b>else</b>
+      </div>
+      <div class="indent-2 substep-1 add">
+        (fv.Lam(name, body._1), <u>"(_ => "</u> + body._2 + <u>")"</u>
+      </div>
+      <div class="indent-0">
+        }
+      </div>
+    </div>
+    <p><br/>Much better than the manual version.</p>
+    <p><b>Good:</b> single traversal, pp and fv reused, less boilerplate.</p>
+    <p><b>Still Bad:</b> ppp and fv coupled.</p>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      substepHide("#ppp-alg .substep-1");
+
+      $("#ppp-alg").one("impress:next", function(event) {
+        event.preventDefault();
+        substepShow("#ppp-alg .substep-1");
+      });
+    });
+  </script>
+
+  <div class="step">
+    <h1>One Problem Left</h1>
+    <p>Algebras are to strict.</p>
+    <p>Algebras require that we consume the same information that we produce.</p>
+    <p><b>Why?</b> To allow folding the algebra over a tree.</p>
+  </div>
+
+  <div class="step">
+    <h1>Proposal</h1>
+    <p>Lift this requirement and allow <b>prealgebras</b>.<br/></p>
+
+    <div class="code">
+      <div class="indent-0">
+        <b>class</b> Prealgebra[A, B] {
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> App(<i>fun</i> : A, <i>arg</i> : A) : B
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> Lam(<i>name</i> : Name, <i>body</i> : A) : B
+      </div>
+
+      <div class="indent-1">
+        <b>def</b> Var(<i>name</i> : Name) : B
+      </div>
+
+      <div class="indent-0">
+        }
+      </div>
+    </div>
+
+    <p><br/><b>Pro:</b> Prealgebras are more composable then algebras.</p>
+    <p><b>Con:</b> Algebras can be folded.</p>
+    <p>Modules should export prealgebras to allow reuse. <br />As late
+    as possible, compose them to get an algebra.<br/></p>
+
+    <div class="code">
+      <b>type</b> Algebra[A] = Prealgebra[A, A]
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="code">
+      <div class="indent-0">
+        Compose[A, B, C](alg : Prealgebra[A, B], f : C => A)
+      </div>
+      <div class="indent-4">
+        extends Prealgebra[C, B] { ... }<br/>&nbsp;
+      </div>
+
+      <div class="indent-0">
+        class AndThen[A, B, C](alg : Prealgebra[A, B], f : B => C)
+      </div>
+      <div class="indent-4">
+        extends Prealgebra[A, C] { ... }<br/>&nbsp;
+      </div>
+
+      <div class="indent-0">
+        class Fanout[A, B, C](algB : Prealgebra[A, B], algC : Prealgebra[A, C])
+      </div>
+      <div class="indent-4">
+        extends Prealgebra[A, (B, C)] { ... }<br/>&nbsp;
+      </div>
+    </div>
+
+    <p><br/>And many more.</p>
+  </div>
+
+  <div class="step">
+    <h1>Conclusion</h1>
+    
+    <ul><li>Algebras (visitors) should really be prealgebras (previsitors?)</li></ul>
+    
+    <h1>Future Work</h1>
+      
+    <ul>
+      <li>Generalize for arbitrary signatures (not just lambda terms)</li>
+      <li>More combinators!</li>
+      <li>Connection to banana-programming with Functor algebras</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<script src="impress.js"></script>
+
+<script>
+jQuery.fn.extend({
+  max: function() {
+    return Math.max.apply(Math, this.get());
+  },
+
+  min: function() {
+    return Math.min.apply(Math, this.get());
+  },
+
+  done: function() {
+    return this.queue(function(next) {
+      $(this).remove();
+      next();
+    });
+  },
+
+  move: function (dst) {
+    return this.queue(function(next) {
+      copyAndPaste(this, dst, function() {
+        $(this).remove();
+      });
+
+      $(this).css({
+        visibility: "hidden"
+      });
+    });
+  }
+});
+
+function scale(x) {
+  var text = $("#impress").css("transform");
+  var part = /^matrix3d\((\S*),.*\)$/g.exec(text);
+  var scale = parseFloat(!part ? 1 : part[1]);
+
+  return x * scale;
+}
+
+function unscale(x) {
+  var text = $("#impress").css("transform");
+  var part = /^matrix3d\((\S*),.*\)$/g.exec(text);
+  var scale = parseFloat(!part ? 1 : part[1]);
+
+  return x / scale;
+}
+
+function copyAndPaste(src, dst, handler) {
+  var moving = $(src).clone().css({
+    position: "absolute",
+    display: "inline-block",
+    left: unscale($(src).position().left),
+    top : unscale($(src).position().top),
+    backgroundColor: "white",
+    transform: $(src).closest(".step").css("transform"),
+    opacity: 1
+  }).appendTo("#impress > div").delay(200).transition({
+    scale: 1.1,
+    duration: 200,
+    ease: "out"
+  }).delay(200).transition({
+    left: unscale($(dst).position().left),
+    top: unscale($(dst).position().top),
+    transform: $(dst).closest(".step").css("transform"),
+    scale: 1.1,
+    duration: 1500
+  }).delay(200).transition({
+    scale: 1.0,
+    duration: 100,
+    ease: "in"
+  });
+
+  var outline = $('<div>').css({
+    position: "absolute",
+    left: -10,
+    top : -10,
+    border: "red solid thick",
+    width: moving.width() + 10,
+    height: moving.height() + 10,
+    scale: 1.1,
+    opacity: 0,
+  }).appendTo(moving).delay(100).transition({
+    opacity: 1,
+    scale: 1.0,
+    duration: 100,
+    ease: "in"
+  }).delay(2400).transition({
+    opacity: 0,
+    scale: 1.1,
+    duration: 200,
+    ease: "out"
+  }).queue(function(next) {
+    $(dst).css({
+      visibility: "visible"
+    });
+    next();
+    handler();
+  }).delay(500).queue(function(next) {
+    $(moving).remove();
+    next();
+  });
+}
+
+  function substepHide(elems) {
+    var filtered = $(elems).filter(".add");
+
+    filtered.closest(".step").each(function() {
+      $(this).width($(this).width());
+      $(this).height($(this).height());
+    });
+
+    filtered.each(function() {
+      if ($(this).is("span")) {
+        $(this).data("old-width", $(this).width()).width(0);
+      } else if ($(this).is("div")) {
+        $(this).data("old-height", $(this).height()).height(0);
+      }
+    });
+  }
+
+  function substepShow(elems) {
+    $(elems).filter(".stay, .add, .kill").addClass("substepping");
+
+    var killed = $(elems).filter(".kill").removeClass("kill").addClass("killing");
+
+    var stayed = $(elems).filter(".stay").removeClass("stay").addClass("staying");
+
+    var added = $(elems).filter(".add");
+
+      added.removeClass("add").addClass("adding").each(function() {
+        if ($(this).is("span")) {
+          $(this).width($(this).data("old-width"));
+        } else if ($(this).is("div")) {
+          $(this).height($(this).data("old-height"));
+        }
+      });
+
+    setTimeout(function() {
+      killed.removeClass("killing").addClass("killed");
+      stayed.removeClass("staying").addClass("stayed");
+      added.removeClass("adding").addClass("added");
+    }, 1600);
+
+  }
+	
+$(document).ready(function() {
+  $(".step").each(function() {
+    var self = $(this);
+    if (!self.attr('data-x')) {
+      self.attr('data-x', self.offset().left + (self.innerWidth() / 2));
+    }
+    if (!self.attr('data-y')) {
+      self.attr('data-y', self.offset().top + (self.innerHeight() / 2));
+    }
+  });
+
+  impress().init();
+});
+
+</script>
+
+</body>
+</html>
